@@ -1,0 +1,9 @@
+body{
+    font-family: "Montserrat", arial;
+    text-align: center;
+    background-color: gray;
+    width: 100%;
+}
+.textbox{
+    padding-top: 15%;
+}

@@ -1,29 +1,67 @@
+var currentDispCelsius = true, 
+    latitude = 0,
+    longitude = 0;
+//block scale change button before json query is made
 $(document).ready(function () {
-
+$("#dispChange").attr("disabled", true);
+setTimeout(function(){
+    $("#dispChange").removeAttr("disabled");    
+    }, 1000);
+//geolocation
    if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(function(position) {
-        var latitude = 0,
-            longitude = 0;
-        $("#data").html("Your latitude: " + position.coords.latitude + "<br>Your longitude: " + position.coords.longitude);
         latitude = position.coords.latitude;
         longitude = position.coords.longitude;
-        constructLink(latitude, longitude);
-        });
-       
-  }   
+        getWeather(latitude, longitude);
+        });    
 
+  }
+//display change if current system is Celcius
+$("#dispChange").click(function(){
+    if (currentDispCelsius === true){
+        $("#celsius").fadeOut(500);
+        setTimeout(function(){
+            $("#fahrenheit").fadeIn(500);
+        }, 500);
+        currentDispCelsius = false;
+        $("#dispChange").text("I'm not American")
+        var that = this;
+        $(this).attr("disabled", true);
+//block button during transition
+        setTimeout(function(){
+            $("#dispChange").removeAttr("disabled");    
+            }, 1000);
+        }
+//display change if current system is Fahrenheit
+    else{
+        $("#fahrenheit").fadeOut(500);
+        setTimeout(function(){
+            $("#celsius").fadeIn(500);
+            }, 500);
+        currentDispCelsius = true;
+        $("#dispChange").text("I'm American")
+        var that = this;
+        $(this).attr("disabled", true);
+//block button during transition        
+        setTimeout(function(){
+            $("#dispChange").removeAttr("disabled");    
+            }, 1000);
+        }
+    
+    });
+    
 });
-function constructLink(lat, long){
+function getWeather(lat, long){
     var tempCelsius = 0;
     var tempFahrenheit = 0;
     var apiString = "";  
-    apiString+= "http://api.openweathermap.org/data/2.5/weather?id=524901&APPID=9d0495bd52b15e645f5ba93ac8b9c889&lat=" + lat + "&lon=" + long;
-    console.log(apiString);
+    //construct string for API request
+    apiString+= "https://crossorigin.me/http://api.openweathermap.org/data/2.5/weather?id=524901&APPID=9d0495bd52b15e645f5ba93ac8b9c889&lat=" + lat + "&lon=" + long;
     $.getJSON(apiString, function (json) {
         var celsiusString = "",
             fahrenheitString = "",
             htmlString = "";
-        console.log(json.weather["0"]["main"]);
+        //calculate Celsius and Fahrenheit values from given Kelvin
         tempCelsius = json.main.temp - 273.15;
         tempFahrenheit = json.main.temp * 9/5 - 459.67;
         tempCelsius = Math.round( tempCelsius * 10 ) / 10;
@@ -35,44 +73,42 @@ function constructLink(lat, long){
         $("#celsius").after(fahrenheitString);
         $("#data").after(htmlString)
         $("#fahrenheit").hide();
-        $("#celsius").click(function(){
-            $(this).hide();
-            $("#fahrenheit").show();
-            });
-        $("#fahrenheit").click(function(){
-            $(this).hide();
-            $("#celsius").show();
-            });
-        
+        //background selection depending on json data
         switch (json.weather["0"]["main"]){
             case "Clouds":
                 $("body").css({"background-image": "url('assets/img/clouds.jpg')",
-                               "color": "white"});
+                               "color": "white",
+                               "text-shadow": "-1px 0 black, 0 1px black, 1px 0 black, 0 -1px black"});                   
                 $("#fahrenheit").after("<p>It's cloudy</p>");                
             break;
             case "Clear":
                 $("body").css({"background-image": "url('assets/img/clear.jpg')",
-                "color": "black"});
+                               "color": "black",
+                                "text-shadow": "-0.8px 0 white, 0 0.8px white, 0.8px 0 white, 0 -0.8px white"});
                 $("#fahrenheit").after("<p>The sky is clear</p>");
             break;
             case "Drizzle":
                 $("body").css({"background-image": "url('assets/img/drizzle.jpg')",
-                               "color": "black"});
+                               "color": "black",
+                                "text-shadow": "-0.8px 0 white, 0 0.8px white, 0.8px 0 white, 0 -0.8px white"});
                 $("#fahrenheit").after("<p>Drizzling rain</p>");                
             break; 
             case "Rain":
                 $("body").css({"background-image": "url('assets/img/rain.jpg')",
-                               "color": "white"});
+                               "color": "white",
+                               "text-shadow": "-1px 0 black, 0 1px black, 1px 0 black, 0 -1px black"});
                 $("#fahrenheit").after("<p>It's raining</p>");                
             break;
             case "Snow":
                 $("body").css({"background-image": "url('assets/img/snow.jpg')",
-                               "color": "black"});
+                               "color": "black",
+                                "text-shadow": "-0.8px 0 white, 0 0.8px white, 0.8px 0 white, 0 -0.8px white"});
                 $("#fahrenheit").after("<p>It's snowing</p>");                
             break;
             case "Thunderstorm":
                 $("body").css({"background-image": "url('assets/img/thunderstorm.jpg')",
-                               "color": "black"});
+                               "color": "black",
+                                "text-shadow": "-0.8px 0 white, 0 0.8px white, 0.8px 0 white, 0 -0.8px white"});
                 $("#fahrenheit").after("<p>Thunderstorm!</p>");                
             break;                   
             }

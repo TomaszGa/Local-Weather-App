@@ -13,3 +13,7 @@ p{
 .textbox{
     margin-top: 15%;
 }
+.disclaimer-text{
+  font-size: 0.8rem;
+  text-shadow: none;
+}
